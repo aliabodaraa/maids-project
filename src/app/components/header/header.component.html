@@ -1,0 +1,14 @@
+<mat-toolbar color="primary">
+    <div style="display: flex; flex:1 1 auto">
+        <span class="title">Angular 18.2</span>
+        <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+        <a mat-button routerLink="/users" routerLinkActive="active">Users</a>
+    </div>
+    <!-- <mat-form-field class="example-form-field" style="margin-top: 25px;">
+        <input matInput type="text" placeholder="Clearable input" name="a" ngModel [ngModel]="searchValue"
+            (ngModelChange)="searchValueChange($event)">
+        <button *ngIf="searchValue" nu matSuffix mat-icon-button aria-label="Clear" (click)="searchValue=null">
+        </button>
+    </mat-form-field> -->
+    <input type="number" (input)="searchUser($event)">
+</mat-toolbar>
