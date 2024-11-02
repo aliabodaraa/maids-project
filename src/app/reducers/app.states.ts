@@ -3,7 +3,7 @@ import { User, UsersInfo } from '../models/user';
 export interface AppState {
 	userState: UserState;
 }
-export enum STATUS{
+export enum LOADING_STATUS{
 	NOT_LOADED='NOT_LOADED',
 	NOT_LOADING='NOT_LOADING',
 	LOADING='LOADING',
@@ -13,7 +13,7 @@ export interface UserState {
 	page: number;
 	usersInfo: UsersInfo;
 	selectedUser: User|null;
-	status: STATUS;
+	loading_status: LOADING_STATUS;
 	error: any;
 	searchedUser: User|null;
 }

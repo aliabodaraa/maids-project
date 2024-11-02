@@ -7,9 +7,9 @@ import { FormsModule } from '@angular/forms';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import { Store } from '@ngrx/store';
-import { STATUS, UserState } from '../../reducers/app.states';
+import { LOADING_STATUS, UserState } from '../../reducers/app.states';
 import * as fromActions from '../../actions/user.actions';
-import { Subject, distinctUntilChanged, switchMap, take, takeUntil, throttleTime } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, of, switchMap, take, takeUntil, throttleTime } from 'rxjs';
 import { HttpRequestHandler } from '../../handlers/http-request-handler';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user.service';
@@ -49,26 +49,34 @@ export class HeaderComponent {
       }
     });
   }
+
+
   /**
    * checkRoute method Check if the current URL ends with the '/users' route to display the input search
    */
   checkRoute() {
     this.showSearch = this.router.url.endsWith('/users');
   }
-  
+
   constructor(private userService:UserService){
-    this.searchSubject.pipe(throttleTime(200)).pipe(
+    this.searchSubject.pipe(
+      debounceTime(700),
       switchMap(userId=>{
-        this.store.dispatch(fromActions.LoadingStatusChange({status:STATUS.LOADING}))
+        if(!userId){
+          this.store.dispatch(fromActions.ClearSearchAction());
+          return of(null)
+        }
+        this.store.dispatch(fromActions.LoadingStatusChange({loading_status:LOADING_STATUS.LOADING}))
         return this.userService.findUser(userId,[this.storeHandler,this.localStorageHandler,this.httpRequestHandler]).pipe(take(1))
       })
-    ).subscribe((user:User|null)=>{
-      if(user){
-        this.store.dispatch(fromActions.GetByIdSuccessAction(user));
-      }else{
-        this.store.dispatch(fromActions.GetByIdFailureAction({error:new Error("No data found")}));
-        this.store.dispatch(fromActions.LoadingStatusChange({status:STATUS.NOT_LOADED}))
-
+    ).subscribe({
+      next:(user:User|null|"{}")=>{
+        if(!user) return
+        if(user && user !==JSON.stringify({})){
+          return this.store.dispatch(fromActions.LoadUserSuccess(user as User));
+        }
+        this.store.dispatch(fromActions.LoadUserFailureAction({error:new Error(JSON.stringify({}))}));
+        this.store.dispatch(fromActions.LoadingStatusChange({loading_status:LOADING_STATUS.NOT_LOADED}));
       }
     });
   }
@@ -76,10 +84,9 @@ export class HeaderComponent {
   searchUser(event:Event){
     //TODO Directive
     const val=+(event.target as HTMLInputElement).value
-    if(val)
-      return this.searchSubject.next(val)
-    this.store.dispatch(fromActions.ClearSearchAction());
+    this.searchSubject.next(val)
   }
+
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.

@@ -3,7 +3,7 @@ import { Observable, map, share, shareReplay, take, tap } from 'rxjs';
 import * as fromReducer from '../../reducers/user.reducer';
 import { User, UsersInfo } from '../../models/user';
 import { Store } from '@ngrx/store';
-import { STATUS, UserState } from '../../reducers/app.states';
+import { LOADING_STATUS, UserState } from '../../reducers/app.states';
 
 import * as fromActions from '../../actions/user.actions';
 import { CommonModule } from '@angular/common';
@@ -26,11 +26,11 @@ export class UserListComponent{
   detailsClicked = new EventEmitter<string | number>();
 	usersInfo$: Observable<UsersInfo>;
   searchedUser$: Observable<User|null>;
-	loading$: Observable<STATUS>;
+	loading$: Observable<LOADING_STATUS>;
   pageIndex:number=0;
   isSearchedUser=false
   searchedUser:User
-  constructor(private store: Store<UserState>) { 
+  constructor(private store: Store<UserState>) {
     this.usersInfo$ = this.store.select(fromReducer.getUsersInfo);
     //this.loadUsers(1)
     this.usersInfo$.pipe(take(1)).subscribe(users_info=>{
@@ -38,18 +38,18 @@ export class UserListComponent{
           return this.loadUsers(1)
       }
     });
-    
+
     this.loading$ = this.store.select(fromReducer.getLoadingState).pipe(shareReplay())
     this.store.select(fromReducer.getPageIndex).pipe(take(1)).subscribe(pageIndex=>this.pageIndex=pageIndex-1)
     this.store.select(fromReducer.getSearchedUser).subscribe(user=>{
       if(user)
         this.searchedUser=user
       this.isSearchedUser=!!user
-    
+
     })
 		this.searchedUser$ = this.store.select(fromReducer.getSearchedUser).pipe(shareReplay());
 
-    
+
   }
 
   loadUsers(page:number){

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of, tap } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { User, UsersInfo } from '../models/user';
 import { LocalStorageHandler } from '../handlers/local-storage-handler';
 import { HttpRequestHandler } from '../handlers/http-request-handler';
@@ -32,24 +32,22 @@ export class UserService {
     }
     getUserById(id: number): Observable<User|undefined> {
         console.log("getUserById",id);
-        return this.http.get<{data:User}|null>(this.url + `/${id}`).pipe(
-            tap(x=>console.log(x)),
+        return this.http.get<{data:User}>(this.url + `/${id}`).pipe(
             map(data=>{
-                if(data) return data.data;
-                return undefined
+                return data.data;
             }),
-            catchError((err)=>{
-                return of(undefined)
+            catchError((err:HttpErrorResponse)=>{
+                return of(JSON.stringify(err.error) as any)
             })
         );
     }
 
 
     /**
-     * 
-     * @param userId 
-     * @param deps 
-     * @returns 
+     *
+     * @param userId
+     * @param deps
+     * @returns
      */
   findUser(userId:number ,deps:UserSearchHandler[]){
     deps.forEach((dep,i)=>{
