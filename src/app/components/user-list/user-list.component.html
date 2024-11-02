@@ -2,7 +2,8 @@
   <ng-container *ngIf="(['LOADED', 'NOT_LOADING'].includes(loading)) && !(searchedUser$|async) ;else loader">
     <ng-container *ngIf="(usersInfo$ | async) as usersInfo">
       <div class="container">
-        <app-user-card *ngFor="let user of usersInfo.data" [user]="user"></app-user-card>
+        <app-user-card [@headerAnimation]="animationState" *ngFor="let user of usersInfo.data"
+          [user]="user"></app-user-card>
       </div>
       <mat-paginator [length]="usersInfo.total" [pageSize]="usersInfo.per_page" [pageIndex]="pageIndex"
         (page)="paginatorChanged($event)">
@@ -11,16 +12,10 @@
   </ng-container>
 </ng-container>
 
+<ng-container *ngIf=" ((loading$|async)=='LOADED'|| 'NOT_LOADING') && (searchedUser$|async) as user">
+  <app-user-card [@headerAnimation]="animationState" [user]="user" class="container"></app-user-card>
+</ng-container>
 
-
-<ul>
-  <li class="user-card" *ngIf=" ((loading$|async)=='LOADED'|| 'NOT_LOADING') && (searchedUser$|async) as user">
-    <div class="user-name">{{user.first_name}}</div>
-    <img [src]="user.avatar" alt="">
-    <div>{{user.last_name}} - <span [routerLink]="[user.id]" routerLinkActive="router-link-active" class="details">More
-        details</span> </div>
-  </li>
-</ul>
 <ng-template #loader>
   <mat-spinner *ngIf="(loading$|async)=='LOADING'"></mat-spinner>
   <div *ngIf="(loading$|async)=='NOT_LOADED'">NO DATA</div>

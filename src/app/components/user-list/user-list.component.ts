@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
 import { Observable, map, share, shareReplay, take, tap } from 'rxjs';
 import * as fromReducer from '../../reducers/user.reducer';
 import { User, UsersInfo } from '../../models/user';
@@ -12,16 +12,17 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatMenuModule} from '@angular/material/menu';
 import { UserCardComponent } from '../user-card/user-card.component';
+import { cardAnimation, headerAnimation } from '../../animations/dashboard.animations';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.scss'],
   standalone:true,
-  imports:[CommonModule,RouterModule,MatProgressSpinnerModule,MatMenuModule,MatPaginatorModule,UserCardComponent]
+  imports:[CommonModule,RouterModule,MatProgressSpinnerModule,MatMenuModule,MatPaginatorModule,UserCardComponent],
+  animations:[cardAnimation,headerAnimation]
 })
 export class UserListComponent{
-
   @Output()
   detailsClicked = new EventEmitter<string | number>();
 	usersInfo$: Observable<UsersInfo>;
@@ -30,7 +31,9 @@ export class UserListComponent{
   pageIndex:number=0;
   isSearchedUser=false
   searchedUser:User
-  constructor(private store: Store<UserState>) {
+  animationState="hide";
+
+  constructor(private store: Store<UserState>,private zone :NgZone) { 
     this.usersInfo$ = this.store.select(fromReducer.getUsersInfo);
     //this.loadUsers(1)
     this.usersInfo$.pipe(take(1)).subscribe(users_info=>{
@@ -54,6 +57,8 @@ export class UserListComponent{
 
   loadUsers(page:number){
 		this.store.dispatch(fromActions.LoadUsers({page}));
+    this.changeAnimation('hide')
+
 	}
   onClick(user: User) {
     this.detailsClicked.emit(user.id);
@@ -61,5 +66,13 @@ export class UserListComponent{
   paginatorChanged({pageIndex}:PageEvent){
     this.pageIndex=pageIndex;
     this.loadUsers(pageIndex+1);
+  }
+  ngAfterContentChecked(): void {
+    this.changeAnimation('show')
+  }
+  changeAnimation(state:'show'|'hide'){
+    setTimeout(()=>{
+      this.animationState=state
+    },10)
   }
 }
