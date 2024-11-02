@@ -10,5 +10,5 @@
         <button *ngIf="searchValue" nu matSuffix mat-icon-button aria-label="Clear" (click)="searchValue=null">
         </button>
     </mat-form-field> -->
-    <input type="number" (input)="searchUser($event)">
+    <input *ngIf="showSearch" type="number" (input)="searchUser($event)">
 </mat-toolbar>

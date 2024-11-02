@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { NavigationStart, Router, RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ import {MatInputModule} from '@angular/material/input';
 import { Store } from '@ngrx/store';
 import { STATUS, UserState } from '../../reducers/app.states';
 import * as fromActions from '../../actions/user.actions';
-import { Subject, switchMap, take, throttleTime } from 'rxjs';
+import { Subject, distinctUntilChanged, switchMap, take, takeUntil, throttleTime } from 'rxjs';
 import { HttpRequestHandler } from '../../handlers/http-request-handler';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user.service';
@@ -35,8 +35,27 @@ export class HeaderComponent {
   searchSubject=new Subject<number>();
   storeHandler=inject(StoreHandler);
   localStorageHandler=inject(LocalStorageHandler);
-httpRequestHandler=inject(HttpRequestHandler)
+  httpRequestHandler=inject(HttpRequestHandler);
   private store= inject(Store<UserState>);
+  router=inject(Router)
+  showSearch: boolean = false;
+  destroy$=new Subject<void>();
+
+  ngOnInit() {
+    // Subscribe to router events to check the current route
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.checkRoute();
+      }
+    });
+  }
+  /**
+   * checkRoute method Check if the current URL ends with the '/users' route to display the input search
+   */
+  checkRoute() {
+    this.showSearch = this.router.url.endsWith('/users');
+  }
+  
   constructor(private userService:UserService){
     this.searchSubject.pipe(throttleTime(200)).pipe(
       switchMap(userId=>{
@@ -61,5 +80,10 @@ httpRequestHandler=inject(HttpRequestHandler)
       return this.searchSubject.next(val)
     this.store.dispatch(fromActions.ClearSearchAction());
   }
-
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
