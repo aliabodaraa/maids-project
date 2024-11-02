@@ -1,18 +1,14 @@
 <ng-container *ngIf="(loading$|async) as loading">
-  <ul class="user-list" *ngIf="(['LOADED', 'NOT_LOADING'].includes(loading)) && !(searchedUser$|async) ;else loader">
+  <ng-container *ngIf="(['LOADED', 'NOT_LOADING'].includes(loading)) && !(searchedUser$|async) ;else loader">
     <ng-container *ngIf="(usersInfo$ | async) as usersInfo">
-      <li class="user-card" *ngFor="let user of usersInfo.data">
-        <div class="user-name">{{user.first_name}}</div>
-        <img [src]="user.avatar" alt="">
-        <div>{{user.last_name}} - <span [routerLink]="[user.id]" routerLinkActive="router-link-active"
-            class="details">More
-            details</span> </div>
-      </li>
+      <div class="container">
+        <app-user-card *ngFor="let user of usersInfo.data" [user]="user"></app-user-card>
+      </div>
       <mat-paginator [length]="usersInfo.total" [pageSize]="usersInfo.per_page" [pageIndex]="pageIndex"
         (page)="paginatorChanged($event)">
       </mat-paginator>
     </ng-container>
-  </ul>
+  </ng-container>
 </ng-container>
 
 
