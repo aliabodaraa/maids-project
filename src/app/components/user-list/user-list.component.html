@@ -17,7 +17,9 @@
 </ng-container>
 
 <ng-template #loader>
-  <mat-spinner *ngIf="(loading$|async)=='LOADING'"></mat-spinner>
+  <div class="spinner-container" *ngIf="(loading$|async)=='LOADING'">
+    <mat-spinner></mat-spinner>
+  </div>
   <div *ngIf="(loading$|async)=='NOT_LOADED'" class="not-found-img">
     <img src="assets/images/not-found-error-alert-svgrepo-com.png" />
   </div>
