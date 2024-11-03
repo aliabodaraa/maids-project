@@ -32,21 +32,5 @@ export class UserEffects {
       })
   ));
 
-  // loadUser$ = createEffect(() => this.actions$.pipe(
-  //   ofType(fromActions.LoadUser),
-  //   exhaustMap(({page}:{page:number}) =>{
-  //       this.store.dispatch(fromActions.LoadingStatusChange({status:STATUS.LOADING}))
-  //       return this.userService.getAllUsers(page).pipe(
-  //         map((usersInfo:UsersInfo|null) => {
-  //           if(!usersInfo) throw new Error()
-  //           this.store.dispatch(fromActions.LoadingStatusChange({status:STATUS.LOADED}))
-  //           return fromActions.LoadUsersSuccess(usersInfo);
-  //         }),
-  //         catchError(error => {
-  //           this.store.dispatch(fromActions.LoadingStatusChange({status:STATUS.NOT_LOADED}))
-  //           return of(fromActions.CreateFailureAction(error))}),
-  //       )
-  //     })
-  // ));
 
 }
