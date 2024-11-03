@@ -1,5 +1,5 @@
-import { Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
-import { Observable, map, share, shareReplay, take, tap } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import { Observable, shareReplay, take } from 'rxjs';
 import * as fromReducer from '../../reducers/user.reducer';
 import { User, UsersInfo } from '../../models/user';
 import { Store } from '@ngrx/store';
@@ -22,9 +22,8 @@ import { cardAnimation, headerAnimation } from '../../animations/dashboard.anima
   imports:[CommonModule,RouterModule,MatProgressSpinnerModule,MatMenuModule,MatPaginatorModule,UserCardComponent],
   animations:[cardAnimation,headerAnimation]
 })
-export class UserListComponent{
-  @Output()
-  detailsClicked = new EventEmitter<string | number>();
+export class UserListComponent implements OnDestroy{
+
 	usersInfo$: Observable<UsersInfo>;
   searchedUser$: Observable<User|null>;
 	loading$: Observable<LOADING_STATUS>;
@@ -33,9 +32,8 @@ export class UserListComponent{
   searchedUser:User
   animationState="hide";
 
-  constructor(private store: Store<UserState>,private zone :NgZone) { 
+  constructor(private store: Store<UserState>) {
     this.usersInfo$ = this.store.select(fromReducer.getUsersInfo);
-    //this.loadUsers(1)
     this.usersInfo$.pipe(take(1)).subscribe(users_info=>{
       if(!users_info.data.length){
           return this.loadUsers(1)
@@ -51,8 +49,6 @@ export class UserListComponent{
 
     })
 		this.searchedUser$ = this.store.select(fromReducer.getSearchedUser).pipe(shareReplay());
-
-
   }
 
   loadUsers(page:number){
@@ -60,19 +56,25 @@ export class UserListComponent{
     this.changeAnimation('hide')
 
 	}
-  onClick(user: User) {
-    this.detailsClicked.emit(user.id);
-  }
+
+
   paginatorChanged({pageIndex}:PageEvent){
     this.pageIndex=pageIndex;
     this.loadUsers(pageIndex+1);
   }
+
   ngAfterContentChecked(): void {
     this.changeAnimation('show')
   }
+
   changeAnimation(state:'show'|'hide'){
     setTimeout(()=>{
       this.animationState=state
     },10)
   }
+
+  ngOnDestroy(): void {
+    this.store.dispatch(fromActions.ClearSearchAction());
+  }
+
 }
