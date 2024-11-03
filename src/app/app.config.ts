@@ -10,8 +10,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { TestData } from './test-data';
 import { UserService } from './services/user.service';
-import { UserCacheService } from './cache.service';
-import { UserFakeService } from './services/userFake.service';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
@@ -24,8 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideStore(reducers),
     provideEffects([UserEffects]),
     UserService,
-    UserFakeService,
-    UserCacheService,
     provideAnimations(),
     provideHttpClient(),
   ]

@@ -15,5 +15,6 @@ import { User } from '../../models/user';
   styleUrl: './user-card.component.scss',
 })
 export class UserCardComponent { 
-  user=input<User>()
+  user=input<User>();
+  withAction=input<boolean>(true);
 }

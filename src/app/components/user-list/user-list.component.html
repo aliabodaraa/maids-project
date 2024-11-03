@@ -6,7 +6,7 @@
           [user]="user"></app-user-card>
       </div>
       <mat-paginator [length]="usersInfo.total" [pageSize]="usersInfo.per_page" [pageIndex]="pageIndex"
-        (page)="paginatorChanged($event)">
+        (page)="paginatorChanged($event)" [showFirstLastButtons]="true">
       </mat-paginator>
     </ng-container>
   </ng-container>

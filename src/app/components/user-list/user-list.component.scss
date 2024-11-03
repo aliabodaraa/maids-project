@@ -36,14 +36,6 @@ body {
   background-color: #f0f0f0;
 }
 
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 100px;
-  padding-top: 100px;
-}
 
 .not-found-img {
   display: flex;
@@ -56,4 +48,8 @@ body {
   align-items: center;
   justify-content: center;
   height: 40vh;
+}
+
+:host ::ng-deep .mat-mdc-paginator-container {
+  background-color: #d8ebf6;
 }

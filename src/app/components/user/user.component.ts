@@ -12,13 +12,14 @@ import { HttpRequestHandler } from '../../handlers/http-request-handler';
 import { UserService } from '../../services/user.service';
 import { StoreHandler } from '../../handlers/store-handler';
 import { LocalStorageHandler } from '../../handlers/local-storage-handler';
+import { UserCardComponent } from '../user-card/user-card.component';
 
 @Component({
 	selector: 'app-user',
 	templateUrl: 'user.component.html',
 	styleUrls:['./user.component.scss'],
 	standalone: true,
-	imports:[CommonModule,RouterModule,MatProgressSpinnerModule,MatCardModule]
+	imports:[CommonModule,RouterModule,MatProgressSpinnerModule,MatCardModule,UserCardComponent]
 })
 export class UserComponent implements OnInit {
 	user$: Observable<User|null>;

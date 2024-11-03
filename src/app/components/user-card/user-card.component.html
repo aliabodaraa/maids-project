@@ -1,7 +1,7 @@
 <div class="card">
   <img [src]="user()?.avatar" alt="Profile Picture" class="noSelect">
   <h2 class="noSelect">{{user()?.first_name}} {{user()?.last_name}}</h2>
-  <div class="social-icons">
+  <div class="social-icons" *ngIf="withAction()">
     <a [routerLink]="[user()?.id]" routerLinkActive="router-link-active">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000">
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

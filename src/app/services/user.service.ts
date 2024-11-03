@@ -1,10 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { User, UsersInfo } from '../models/user';
-import { LocalStorageHandler } from '../handlers/local-storage-handler';
-import { HttpRequestHandler } from '../handlers/http-request-handler';
-import { StoreHandler } from '../handlers/store-handler';
 import { UserSearchHandler } from '../handlers/search-handler.model';
 
 
