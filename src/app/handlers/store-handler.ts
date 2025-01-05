@@ -20,12 +20,13 @@ export class StoreHandler extends BaseHandler {
     HandlerUtility.registerHandler(Handlers_Types.StoreHandler, this);
   }
 
-  check(userId: number | null): Observable<User | undefined> {
+  check(userId: number): Observable<User | null> {
     return this.store
       .select(getUsersInfo)
       .pipe(
-        map(({ data: users }) => users.find((user) => user.id == userId)) ||
-          undefined
+        map(
+          ({ data: users }) => users.find((user) => user.id == userId) || null
+        )
       );
   }
 }

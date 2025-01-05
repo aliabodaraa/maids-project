@@ -13,23 +13,20 @@ import { Injectable } from '@angular/core';
  */
 export abstract class BaseHandler implements UserSearchHandler {
   private nextHandler: UserSearchHandler;
-  constructor() {}
 
   setNext(handler: UserSearchHandler): UserSearchHandler {
     this.nextHandler = handler;
     return handler;
   }
 
-  handle(userId: number | null): Observable<User | null> {
+  handle(userId: number): Observable<User | null> {
     return this.check(userId).pipe(
       switchMap((user) => {
-        if (user) {
-          return of(user);
-        }
+        if (user) return of(user);
         return this.nextHandler ? this.nextHandler.handle(userId) : of(null);
       })
     );
   }
 
-  abstract check(userId: number | null): Observable<User | undefined>;
+  abstract check(userId: number): Observable<User | null>;
 }

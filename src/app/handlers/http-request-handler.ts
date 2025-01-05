@@ -15,12 +15,12 @@ import { Handlers_Types } from './handler.type';
  * Basically this handler as a last resort
  */
 export class HttpRequestHandler extends BaseHandler {
-  constructor(private userService: UserService) {
+  constructor(private readonly userService: UserService) {
     super();
     HandlerUtility.registerHandler(Handlers_Types.HttpRequestHandler, this);
   }
 
-  check(userId: number): Observable<User | undefined> {
+  check(userId: number): Observable<User | null> {
     return this.userService.getUserById(userId);
   }
 }

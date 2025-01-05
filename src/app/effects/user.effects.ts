@@ -4,43 +4,22 @@ import { of } from 'rxjs';
 import { map, catchError, exhaustMap } from 'rxjs/operators';
 import * as fromActions from '../actions/user.actions';
 import { UserService } from '../services/user.service';
-import { Store } from '@ngrx/store';
-import { LOADING_STATUS, UserState } from '../reducers/app.states';
 import { UsersInfo } from '../models/user';
 
 @Injectable()
 export class UserEffects {
   private readonly actions$ = inject(Actions);
   private readonly userService = inject(UserService);
-  private readonly store = inject(Store<UserState>);
 
   loadAllUsers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(fromActions.LoadUsers),
       exhaustMap(({ page }: { page: number }) => {
-        this.store.dispatch(
-          fromActions.LoadingStatusChange({
-            loading_status: LOADING_STATUS.LOADING,
-          })
-        );
         return this.userService.getAllUsers(page).pipe(
-          map((usersInfo: UsersInfo | null) => {
-            if (!usersInfo) throw new Error();
-            this.store.dispatch(
-              fromActions.LoadingStatusChange({
-                loading_status: LOADING_STATUS.LOADED,
-              })
-            );
-            return fromActions.LoadUsersSuccess(usersInfo);
-          }),
-          catchError((error) => {
-            this.store.dispatch(
-              fromActions.LoadingStatusChange({
-                loading_status: LOADING_STATUS.NOT_LOADED,
-              })
-            );
-            return of(fromActions.LoadUsersFailure(error));
-          })
+          map((usersInfo: UsersInfo) =>
+            fromActions.LoadUsersSuccess(usersInfo)
+          ),
+          catchError((error) => of(fromActions.LoadUsersFailure(error)))
         );
       })
     )

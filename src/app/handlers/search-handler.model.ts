@@ -8,5 +8,5 @@ import { User } from '../models/user';
  */
 export interface UserSearchHandler {
   setNext(handler: UserSearchHandler | null): UserSearchHandler;
-  handle(userId: number | null): Observable<User | null>;
+  handle(userId: number): Observable<User | null>;
 }

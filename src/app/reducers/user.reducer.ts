@@ -52,13 +52,7 @@ const _userReducer = createReducer(
     searchedUser,
     loading_status: LOADING_STATUS.LOADED,
   })),
-  on(fromActions.LoadUserFailureAction, (state, error) => ({
-    ...state,
-    searchedUser: null,
-    selectedUser: null,
-    error,
-    status: LOADING_STATUS.NOT_LOADED,
-  })),
+
   on(fromActions.ClearSearchAction, (state) => ({
     ...state,
     searchedUser: null,

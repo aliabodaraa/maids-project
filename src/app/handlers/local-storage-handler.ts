@@ -1,5 +1,5 @@
 import { User } from '../models/user';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { BaseHandler } from './base-handler';
 import { HandlerUtility } from './handler-utility.service';
@@ -17,19 +17,19 @@ export class LocalStorageHandler extends BaseHandler {
     super();
     HandlerUtility.registerHandler(Handlers_Types.LocalStorageHandler, this);
   }
-  check(userId: number | null): Observable<User | undefined> {
+  check(userId: number): Observable<User | null> {
     let page = 1;
     let users;
     users = localStorage.getItem(`users_${page}`);
     while (users) {
       users = JSON.parse(users);
       users = users.data;
-      for (let i = 0; i < users.length; i++) {
-        if (users[i].id == userId) return of(users[i]);
+      for (const user of users) {
+        if (user.id == userId) return of(user);
       }
       page++;
       users = localStorage.getItem(`users_${page}`);
     }
-    return of(undefined);
+    return of(null);
   }
 }

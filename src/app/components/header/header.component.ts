@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Store } from '@ngrx/store';
 import { LOADING_STATUS, UserState } from '../../reducers/app.states';
 import * as actions from '../../actions/user.actions';
-import { Subject, debounceTime, of, switchMap, take, takeUntil } from 'rxjs';
+import { Subject, debounceTime, of, switchMap, takeUntil } from 'rxjs';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user.service';
 
@@ -29,7 +29,7 @@ import { UserService } from '../../services/user.service';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  searchSubject = new Subject<number>();
+  searchSubject = new Subject<string>();
   private readonly store = inject(Store<UserState>);
   router = inject(Router);
   showSearch: boolean = false;
@@ -55,19 +55,16 @@ export class HeaderComponent {
               loading_status: LOADING_STATUS.LOADING,
             })
           );
-          return this.userService.findUser(userId).pipe(take(1));
-        })
+          return this.userService.findUser(+userId);
+        }),
+        takeUntil(this.destroy$)
       )
       .subscribe({
-        next: (user: User | null | '{}') => {
+        next: (user: User | null) => {
           if (!user) return;
-          if (user && user !== JSON.stringify({}))
-            return this.store.dispatch(actions.LoadUserSuccess(user as User));
-          this.store.dispatch(
-            actions.LoadUserFailureAction({
-              error: new Error(JSON.stringify({})),
-            })
-          );
+          if (user.id)
+            return this.store.dispatch(actions.LoadUserSuccess(user));
+
           this.store.dispatch(
             actions.LoadingStatusChange({
               loading_status: LOADING_STATUS.NOT_LOADED,
@@ -85,7 +82,7 @@ export class HeaderComponent {
   }
 
   searchUser(event: Event) {
-    const val = +(event.target as HTMLInputElement).value;
+    const val = (event.target as HTMLInputElement).value;
     this.searchSubject.next(val);
   }
 
